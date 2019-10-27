@@ -9,7 +9,7 @@ const app = express()
 const compiler = webpack(WebpackConfig)
 
 app.use(webpackDevMiddleware(compiler, {
-  publicPath: '/__build__/' ,
+  publicPath: '/__build__/',
   stats: {
     colors: true,
     chunks: false
@@ -31,6 +31,23 @@ router.get('/simple/get', function (req, res) {
 
 router.get('/base/get', function (req, res) {
   res.json(req.query)
+})
+
+router.post('/base/post', function (req, res) {
+  res.json(req.body)
+})
+
+router.post('/base/buffer', function (req, res) {
+  let msg = []
+  req.on('data', (chunk) => {
+    if (chunk) {
+      msg.push(chunk)
+    }
+  })
+  req.on('end', () => {
+    let buf = Buffer.concat(msg)
+    res.json(buf.toJSON())
+  })
 })
 
 app.use(router)
