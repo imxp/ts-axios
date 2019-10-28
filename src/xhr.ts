@@ -1,6 +1,7 @@
 import { AxiosResponse } from './types/index'
 import { AxiosRequestConfig, AxiosPromise } from './types'
 import { paseHeaders } from './helpers/headers'
+import { createError } from './helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -40,11 +41,11 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
     // 处理网络异常
     request.onerror = function handleError() {
-      reject(new Error('network Error'))
+      reject(createError('network Error', config, null, request))
     }
     // 超时
     request.ontimeout = function handleTImeout() {
-      reject(new Error(`Timeout of ${timeout} ms exceeded`))
+      reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
     }
 
     // 设置请求头content-type
@@ -63,7 +64,15 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       if (response.status >= 200 && response.status < 300) {
         resolve(response)
       } else {
-        reject(new Error(`Requset failed with status code ${response.status}`))
+        reject(
+          createError(
+            `Requset failed with status code ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        )
       }
     }
   })
