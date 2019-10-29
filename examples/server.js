@@ -28,7 +28,7 @@ registerBaseRouter()
 registerErrorRouter()
 registerExtendRouter()
 registerInterceptorRouter()
-
+registerConfigRouter()
 
 app.use(router)
 
@@ -121,6 +121,13 @@ function registerInterceptorRouter () {
     res.end('helli')
   })
 }
+
+function registerConfigRouter () {
+  router.post('/config/post', function (req, res) {
+    res.end('helli')
+  })
+}
+
 
 const port = process.env.PORT || 8081
 module.exports = app.listen(port, () => {
